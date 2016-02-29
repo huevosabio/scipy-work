@@ -105,7 +105,16 @@ class TestGCROTMK(object):
         x, info = gcrotmk(A, b, tol=0, maxiter=10)
         assert_equal(info, 1)
 
+    def test_truncate(self):
+        np.random.seed(1234)
+        A = np.random.rand(30, 30) + np.eye(30)
+        b = np.random.rand(30)
 
+        for truncate in ['oldest', 'smallest']:
+            x, info = gcrotmk(A, b, m=10, k=10, truncate=truncate, tol=1e-4,
+                              maxiter=200)
+            assert_equal(info, 0)
+            assert_allclose(A.dot(x) - b, 0, atol=1e-3)
 
 if __name__ == "__main__":
     run_module_suite()

@@ -253,7 +253,6 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
     r = b - matvec(x)
 
     axpy, dot, scal, nrm2 = get_blas_funcs(['axpy', 'dot', 'scal', 'nrm2'], (x, r))
-    trtrs = get_lapack_funcs('trtrs', (x, r))
 
     b_norm = nrm2(b)
     if b_norm == 0:
@@ -345,6 +344,8 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         if not np.isfinite(y).all():
             # Floating point over/underflow, non-finite result from
             # matmul etc. -- report failure.
+            if discard_C:
+                CU[:] = [(None, u) for c, u in CU]
             return postprocess(x), j_outer + 1
 
         #
@@ -406,7 +407,7 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         elif truncate == 'smallest':
             if len(CU) >= k and CU:
                 # cf. [1]
-                D = solve(R.T, B.T).T
+                D = solve(R[:-1,:].T, B.T).T
                 W, sigma, V = svd(D)
 
                 # C := C W[:,:-1],  U := U W[:,:-1]
