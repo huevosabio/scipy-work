@@ -151,8 +151,8 @@ def _fgmres(matvec, v0, m, atol, lpsolve=None, rpsolve=None, cs=(), outer_v=()):
     # -- Get the LSQ problem solution
     y, info = trtrs(R[:j+1,:j+1], Q[0,:j+1].conj())
     if info != 0:
-        # Zero diagonal -> exact solution, but we handled that above
-        raise RuntimeError("QR solution failed")
+        # Zero diagonal -> didn't get a solution
+        y = np.zeros(j+1, dtype=Q.dtype)
 
     B = B[:,:j+1]
 
@@ -383,9 +383,16 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
 
         # Normalize cx, maintaining cx = A ux
         # This new cx is orthogonal to the previous C, by construction
-        alpha = nrm2(cx)
-        cx = scal(1.0/alpha, cx)
-        ux = scal(1.0/alpha, ux)
+        try:
+            alpha = 1/nrm2(cx)
+            if not np.isfinite(alpha):
+                raise FloatingPointError()
+        except (FloatingPointError, ZeroDivisionError):
+            # Cannot update, so skip it
+            continue
+
+        cx = scal(alpha, cx)
+        ux = scal(alpha, ux)
 
         # Update residual and solution
         gamma = dot(cx, r)
@@ -394,10 +401,10 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
 
         # Truncate CU
         if truncate == 'oldest':
-            while len(CU) >= k:
+            while len(CU) >= k and CU:
                 del CU[0]
         elif truncate == 'smallest':
-            if len(CU) >= k:
+            if len(CU) >= k and CU:
                 # cf. [1]
                 D = solve(R.T, B.T).T
                 W, sigma, V = svd(D)
