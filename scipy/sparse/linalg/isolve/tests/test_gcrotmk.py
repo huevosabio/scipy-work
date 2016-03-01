@@ -117,17 +117,25 @@ class TestGCROTMK(object):
             assert_allclose(A.dot(x) - b, 0, atol=1e-3)
 
     def test_CU(self):
-        # Check that C,U behave as expected
-        CU = []
-        x0, count_0 = do_solve(CU=CU)
-        assert_(len(CU) > 0)
-        assert_(len(CU) <= 6)
+        for discard_C in (True, False):
+            # Check that C,U behave as expected
+            CU = []
+            x0, count_0 = do_solve(CU=CU, discard_C=discard_C)
+            assert_(len(CU) > 0)
+            assert_(len(CU) <= 6)
 
-        # should converge immediately
-        x1, count_1 = do_solve(CU=CU)
-        assert_equal(count_1, 2)
-        assert_(count_1 < count_0/2)
-        assert_allclose(x1, x0, atol=1e-14)
+            if discard_C:
+                for c, u in CU:
+                    assert_(c is None)
+
+            # should converge immediately
+            x1, count_1 = do_solve(CU=CU, discard_C=discard_C)
+            if discard_C:
+                assert_equal(count_1, 1 + len(CU))
+            else:
+                assert_equal(count_1, 2)
+            assert_(count_1 < count_0/2)
+            assert_allclose(x1, x0, atol=1e-14)
 
 
 if __name__ == "__main__":
