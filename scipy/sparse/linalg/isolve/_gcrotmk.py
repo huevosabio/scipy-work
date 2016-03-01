@@ -161,7 +161,7 @@ def _fgmres(matvec, v0, m, atol, lpsolve=None, rpsolve=None, cs=(), outer_v=()):
 
 
 def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
-            m=20, k=None, CU=None, discard_C=False, truncate='smallest'):
+            m=20, k=None, CU=None, discard_C=False, truncate='oldest'):
     """
     Solve a matrix equation using flexible GCROT(m,k) algorithm.
 
@@ -209,7 +209,7 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         Truncation scheme to use. Drop: oldest vectors, or vectors with
         smallest singular values using the scheme discussed in [1,2].
         See [2]_ for detailed comparison.
-        Default: 'smallest'
+        Default: 'oldest'
 
     Returns
     -------
