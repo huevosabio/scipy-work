@@ -328,7 +328,7 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         beta = nrm2(r)
 
         # -- check stopping condition
-        if beta <= tol * b_norm:
+        if beta <= max(tol, tol * b_norm):
             j_outer = -1
             break
 
