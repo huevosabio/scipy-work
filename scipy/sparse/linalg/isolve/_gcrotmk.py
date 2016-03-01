@@ -165,7 +165,6 @@ def _fgmres(matvec, v0, m, atol, lpsolve=None, rpsolve=None, cs=(), outer_v=(),
     return Q, R, B, vs, zs, y
 
 
-
 def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
             m=20, k=None, CU=None, discard_C=False, truncate='oldest'):
     """
@@ -381,13 +380,13 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         by = B.dot(y)
         for cu, byc in zip(CU, by):
             c, u = cu
-            ux = axpy(u, ux, ux.shape[0], -byc) # ux -= u*byc
+            ux = axpy(u, ux, ux.shape[0], -byc)  # ux -= u*byc
 
         # cx := V H y
         hy = Q.dot(R.dot(y))
         cx = vs[0] * hy[0]
         for v, hyc in zip(vs[1:], hy[1:]):
-            cx = axpy(v, cx, cx.shape[0], hyc) # cx += v*hyc
+            cx = axpy(v, cx, cx.shape[0], hyc)  # cx += v*hyc
 
         # Normalize cx, maintaining cx = A ux
         # This new cx is orthogonal to the previous C, by construction
