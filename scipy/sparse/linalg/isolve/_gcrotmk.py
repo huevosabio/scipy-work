@@ -198,10 +198,10 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
     CU : list of tuples, optional
         List of tuples ``(c, u)`` which contain the columns of the matrices
         C and U in the GCROT(m,k) algorithm. For details, see [1]_.
-        The list given is modified in-place. If not given, start from empty
-        matrices. The ``c`` elements in the tuples can be ``None``,
-        in which case the vectors are recomputed via ``c = A u``
-        on start and orthogonalized as described in [3]_.
+        The list given and vectors contained in it are modified in-place.
+        If not given, start from empty matrices. The ``c`` elements in the
+        tuples can be ``None``, in which case the vectors are recomputed
+        via ``c = A u`` on start and orthogonalized as described in [3]_.
     discard_C : bool, optional
         Discard the C-vectors at the end. Useful if recycling Krylov subspaces
         for different linear systems.
@@ -327,6 +327,7 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
 
         # -- check stopping condition
         if beta <= tol * b_norm:
+            j_outer = -1
             break
 
         ml = m + max(k - len(CU), 0)
@@ -344,9 +345,7 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         if not np.isfinite(y).all():
             # Floating point over/underflow, non-finite result from
             # matmul etc. -- report failure.
-            if discard_C:
-                CU[:] = [(None, u) for c, u in CU]
-            return postprocess(x), j_outer + 1
+            break
 
         #
         # At this point,
@@ -437,16 +436,10 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
 
         # Add new vector to CU
         CU.append((cx, ux))
-    else:
-        # didn't converge ...
-        CU.append((None, x))
-        if discard_C:
-            CU[:] = [(None, u) for c, u in CU]
-        return postprocess(x), maxiter
 
     # Include the solution vector to the span
-    CU.append((None, x))
+    CU.append((None, x.copy()))
     if discard_C:
         CU[:] = [(None, u) for c, u in CU]
 
-    return postprocess(x), 0
+    return postprocess(x), j_outer + 1
