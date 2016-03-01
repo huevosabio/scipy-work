@@ -193,11 +193,11 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         Default: 20
     k : int, optional
         Number of vectors to carry between inner FGMRES iterations.
-        According to [1]_, good values are around m.
+        According to [2]_, good values are around m.
         Default: m
     CU : list of tuples, optional
         List of tuples ``(c, u)`` which contain the columns of the matrices
-        C and U in the GCROT(m,k) algorithm. For details, see [1]_.
+        C and U in the GCROT(m,k) algorithm. For details, see [2]_.
         The list given and vectors contained in it are modified in-place.
         If not given, start from empty matrices. The ``c`` elements in the
         tuples can be ``None``, in which case the vectors are recomputed
@@ -207,8 +207,8 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         for different linear systems.
     truncate : {'oldest', 'smallest'}, optional
         Truncation scheme to use. Drop: oldest vectors, or vectors with
-        smallest singular values using the scheme discussed in [2].
-        See [1]_ for detailed comparison.
+        smallest singular values using the scheme discussed in [1,2].
+        See [2]_ for detailed comparison.
         Default: 'smallest'
 
     Returns
@@ -223,11 +223,11 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
 
     References
     ----------
-    .. [1] J.E. Hicken and D.W. Zingg, ''A simplified and flexible variant
+    .. [1] E. de Sturler, ''Truncation strategies for optimal Krylov subspace
+           methods'', SIAM J. Numer. Anal. 36, 864 (1999).
+    .. [2] J.E. Hicken and D.W. Zingg, ''A simplified and flexible variant
            of GCROT for solving nonsymmetric linear systems'',
            SIAM J. Sci. Comput. 32, 172 (2010).
-    .. [2] E. de Sturler, ''Truncation strategies for optimal Krylov subspace
-           methods'', SIAM J. Numer. Anal. 36, 864 (1999).
     .. [3] M.L. Parks, E. de Sturler, G. Mackey, D.D. Johnson, S. Maiti,
            ''Recycling Krylov subspaces for sequences of linear systems'',
            SIAM J. Sci. Comput. 28, 1651 (2006).
