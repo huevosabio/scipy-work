@@ -14,7 +14,8 @@ __all__ = ['lgmres']
 
 
 def lgmres(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
-           inner_m=30, outer_k=3, outer_v=None, store_outer_Av=True):
+           inner_m=30, outer_k=3, outer_v=None, store_outer_Av=True,
+           prepend_outer_v=False):
     """
     Solve a matrix equation using the LGMRES algorithm.
 
@@ -63,6 +64,9 @@ def lgmres(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
     store_outer_Av : bool, optional
         Whether LGMRES should store also A*v in addition to vectors `v`
         in the `outer_v` list. Default is True.
+    prepend_outer_v : bool, optional 
+        Whether to put outer_v augmentation vectors before Krylov iterates.
+        In standard LGMRES, prepend_outer_v=False.
 
     Returns
     -------
@@ -153,7 +157,8 @@ def lgmres(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
                                      inner_m,
                                      lpsolve=psolve,
                                      atol=tol*b_norm/r_norm,
-                                     outer_v=outer_v)
+                                     outer_v=outer_v,
+                                     prepend_outer_v=prepend_outer_v)
         y *= inner_res_0
 
         if not np.isfinite(y).all():
