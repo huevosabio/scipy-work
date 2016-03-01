@@ -152,7 +152,7 @@ def lgmres(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
                                      v0,
                                      inner_m,
                                      lpsolve=psolve,
-                                     atol=tol,
+                                     atol=tol*b_norm/r_norm,
                                      outer_v=outer_v)
         y *= inner_res_0
 
