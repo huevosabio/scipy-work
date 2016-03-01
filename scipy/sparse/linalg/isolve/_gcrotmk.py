@@ -161,7 +161,7 @@ def _fgmres(matvec, v0, m, atol, lpsolve=None, rpsolve=None, cs=(), outer_v=()):
 
 
 def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
-            m=20, k=None, CU=None, discard_C=False, truncate='oldest'):
+            m=20, k=None, CU=None, discard_C=False, truncate='smallest'):
     """
     Solve a matrix equation using flexible GCROT(m,k) algorithm.
 
@@ -207,7 +207,9 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
         for different linear systems.
     truncate : {'oldest', 'smallest'}, optional
         Truncation scheme to use. Drop: oldest vectors, or vectors with
-        smallest singular values. See [1]_ for details.
+        smallest singular values using the scheme discussed in [2].
+        See [1]_ for detailed comparison.
+        Default: 'smallest'
 
     Returns
     -------
@@ -405,11 +407,11 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
                 del CU[0]
         elif truncate == 'smallest':
             if len(CU) >= k and CU:
-                # cf. [1]
+                # cf. [1,2]
                 D = solve(R[:-1,:].T, B.T).T
                 W, sigma, V = svd(D)
 
-                # C := C W[:,:-1],  U := U W[:,:-1]
+                # C := C W[:,:k-1],  U := U W[:,:k-1]
                 new_CU = []
                 for j, w in enumerate(W[:,:k-1].T):
                     c, u = CU[0]
