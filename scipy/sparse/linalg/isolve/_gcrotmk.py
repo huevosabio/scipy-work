@@ -447,6 +447,6 @@ def gcrotmk(A, b, x0=None, tol=1e-5, maxiter=1000, M=None, callback=None,
     # Include the solution vector to the span
     CU.append((None, x.copy()))
     if discard_C:
-        CU[:] = [(None, u) for c, u in CU]
+        CU[:] = [(None, uz) for cz, uz in CU]
 
     return postprocess(x), j_outer + 1
