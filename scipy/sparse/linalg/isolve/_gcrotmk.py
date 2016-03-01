@@ -4,7 +4,7 @@
 from __future__ import division, print_function, absolute_import
 
 import numpy as np
-from six.moves import xrange
+from scipy._lib.six import xrange
 from scipy.linalg import (get_blas_funcs, get_lapack_funcs, qr, solve, svd,
                           qr_insert)
 from scipy.sparse.linalg.isolve.utils import make_system
